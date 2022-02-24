@@ -1,0 +1,27 @@
+{
+  "name": "admission-sdk",
+  "version": "0.0.1",
+  "description": "SDK for admission controllers",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brendandburns/admission-sdk.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "sdk"
+  ],
+  "author": "Brendan Burns",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brendandburns/admission-sdk/issues"
+  },
+  "homepage": "https://github.com/brendandburns/admission-sdk#readme",
+  "dependencies": {
+    "@kubernetes/client-node": "^0.16.3",
+    "shelljs": "^0.8.5"
+  }
+}
