@@ -1,6 +1,11 @@
 const k8s = require('@kubernetes/client-node');
 const fs = require('fs');
 
+exports.unregisterNamespaced = function(controllerName, kc) {
+  const admissionApi = kc.makeApiClient(k8s.AdmissionregistrationV1Api);
+  return admissionApi.deleteValidatingWebhookConfiguration(controllerName);
+}
+
 exports.registerNamespaced = function(controllerName, serviceName, serviceNamespace, kc, apiGroup, apiVersion, operations, resource) {
     const admissionApi = kc.makeApiClient(k8s.AdmissionregistrationV1Api);
 
