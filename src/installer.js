@@ -1,4 +1,6 @@
-exports.install = (controllerName, controllerNamespace, imageName, kc) => {
+const k8s = require('@kubernetes/client-node');
+
+exports.install = (controllerName, controllerNamespace, imageName, imageSecrets, kc) => {
     const deployment = {
         apiVersion: 'apps/v1',
         kind: 'Deployment',
@@ -20,9 +22,7 @@ exports.install = (controllerName, controllerNamespace, imageName, kc) => {
                     }
                 },
                 spec: {
-                    imagePullSecrets: [{
-                        name: 'pull-secret'
-                    }],
+                    imagePullSecrets: imageSecrets,
                     containers: [{
                         name: controllerName,
                         image: imageName,
@@ -55,24 +55,18 @@ exports.install = (controllerName, controllerNamespace, imageName, kc) => {
     const appsApi = kc.makeApiClient(k8s.AppsV1Api);
     const coreApi = kc.makeApiClient(k8s.CoreV1Api);
 
-    appsApi.createNamespacedDeployment(controllerNamespace, deployment)
-        .then(() => console.log('admission deployment created.'))
-        .catch(err => console.log(err));
+    const p1 = appsApi.createNamespacedDeployment(controllerNamespace, deployment);
+    const p2 = coreApi.createNamespacedService(controllerNamespace, service);
 
-    coreApi.createNamespacedService(controllerNamespace, service)
-        .then(() => console.log('admission service created.'))
-        .catch(err => console.log(err));
+    return Promise.all([p1, p2]);
 }
 
 exports.uninstall = (controllerName, controllerNamespace, kc) => {
     const appsApi = kc.makeApiClient(k8s.AppsV1Api);
     const coreApi = kc.makeApiClient(k8s.CoreV1Api);
 
-    appsApi.deleteNamespacedDeployment(controllerName, controllerNamespace)
-        .then(() => console.log('admission deployment deleted.'))
-        .catch(handleError);
+    const p1 = appsApi.deleteNamespacedDeployment(controllerName, controllerNamespace);
+    const p2 = coreApi.deleteNamespacedService(controllerName, controllerNamespace);
 
-    coreApi.deleteNamespacedService(controllerName, controllerNamespace)
-        .then(() => console.log('admission service deleted.'))
-        .catch(handleError);
+    return Promise.all([p1, p2]);
 }

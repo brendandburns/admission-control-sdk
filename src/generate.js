@@ -20,3 +20,8 @@ exports.generateCerts = function (org, caName, serviceName, serviceNamespace) {
     ]
     paths.forEach((path) => fs.rmSync(path));
 }
+
+exports.build = (imageName, controllerName) => {
+    shelljs.exec(`docker build -t ${imageName} .`, { env: { ADMIT_NAME: controllerName } });
+    shelljs.exec(`docker push ${imageName}`);
+}

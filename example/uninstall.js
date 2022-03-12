@@ -1,6 +1,7 @@
-const register = require('./register.js');
-const installer = require('./installer.js');
 const k8s = require('@kubernetes/client-node');
+const admit = require('admission-sdk');
+const register = admit.register;
+const installer = admit.installer;
 
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
@@ -19,7 +20,7 @@ register.unregisterNamespaced(controllerDomain, kc)
 // we try to delete, in case it affects the deletes.
 
 setTimeout(() => {
-    installer.uninstall(controllerName, controllerNamespace)
+    installer.uninstall(controllerName, controllerNamespace, kc)
         .then(() => console.log('admission service deleted'))
         .catch(handleError);
 }, 1000);

@@ -1,7 +1,8 @@
 const fs = require('fs');
-const shelljs = require('shelljs');
+const admit = require('admission-sdk');
+const generate = admit.generate;
 
-const imageName = 'burns.azurecr.io/test:v1';
+const imageName = 'burns.azurecr.io/test:v2';
 const controllerName = 'admitit';
 const controllerNamespace = 'default';
 const organization = 'Admission SDK';
@@ -13,7 +14,6 @@ if (!fs.existsSync('certs/ca.crt')) {
     console.log('skipping certificate creation');
 }
 
-shelljs.exec(`docker build -t ${imageName} .`, { env: { ADMIT_NAME: controllerName } });
-shelljs.exec(`docker push ${imageName}`);
+generate.build(imageName, controllerName);
 
 

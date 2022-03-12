@@ -1,6 +1,7 @@
-const register = require('./register.js');
-const installer = require('./installer.js');
 const k8s = require('@kubernetes/client-node');
+const admit = require('admission-sdk');
+const installer = admit.installer;
+const register = admit.register;
 
 const controllerName = 'admitit';
 const controllerNamespace = 'default';
@@ -9,12 +10,14 @@ const apiGroup = '';
 const apiVersion = 'v1';
 const verbs = ['CREATE'];
 const resource = 'pods';
-const imageName = 'burns.azurecr.io/admission-sdk:v14';
+const imageName = 'burns.azurecr.io/test:v2';
 
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 
-installer.install(controllerName, controllerNamespace, imageName, kc)
+const secrets = [{ name: 'pull-secret' }];
+
+installer.install(controllerName, controllerNamespace, imageName, secrets, kc)
     .then(() => console.log('admission service created.'))
     .catch(err => console.log(err));
 
